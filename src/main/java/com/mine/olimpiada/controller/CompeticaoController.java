@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mine.olimpiada.bo.CompeticaoBO;
+
 /**
  * @author Zinsly, Tatiane
  * @email tzinsly@br.ibm.com
@@ -18,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class CompeticaoController {
 	
 	@RequestMapping(value = {"/competicao"}, method=RequestMethod.POST)
-	public String cadastro(@RequestParam String modalidade, HttpServletRequest request){
-		return "cadastro";
+	public String cadastro(@RequestParam String data, HttpServletRequest request){
+		return this.salvarCompeticao(data);
+		//return comp.getRecordCountJSON().toString();
+		//return "cadastro";
 	}
 	
 	@RequestMapping(value = { "/competicao/{id}", "/competicao/{id}/" })
@@ -30,6 +34,11 @@ public class CompeticaoController {
 	@RequestMapping(value = { "/competicao/all", "/competicao/all/" })
 	public String viewAllCompeticao(){
 		return "";
+	}
+	
+	public String salvarCompeticao(String data){
+		CompeticaoBO compBO = new CompeticaoBO();
+		return compBO.salvarCompeticao(data);
 	}
 	
 }
