@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1"></meta>
+<script language="javascript" type="text/javascript">
+	function validar() {
+		var modalidade = cadastro.modalidade.value;
+		var local = cadastro.local.value;
+		var data = cadastro.data.value;
+		var pais1 = cadastro.pais1.value;
+		var pais2 = cadastro.pais2.value;
+		var etapa = cadastro.etapa.value;
+	}
+</script>
+<title>Cadastro de Competicoes</title>
+</head>
+<body background="images/tokyo-2020.jpg" bgproperties="fixed">
+
+	<h1>Cadastro de Competicoes</h1>
+	<form name="cadastro" method="post">
+		Modalidade: <input name="nome" type="text"></input><br /> <br />
+		Local: <input name="local" type="text"></input><br /> <br /> 
+		Data: <input name="data" type="date"></input><br /> <br /> 
+		Pais 1: <input name="pais1" type="text"></input><br /> <br /> 
+		Pais 2: <input name="pais2" type="text"></input><br /> 
+		Etapa: <input name="etapa" type="text"></input><br /> <br />		
+		<br /> <input type="submit" onclick="return validar()"
+			value="Inserir"></input>
+	</form>
+
+</body>
+</html>

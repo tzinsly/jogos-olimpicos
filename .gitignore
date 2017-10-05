@@ -1,0 +1,17 @@
+# Binaries folders #
+####################
+target/
+
+# Eclipse Files   #
+###################
+.settings/
+.classpath
+.project
+
+# Compresse files #
+###################
+*.jar
+
+# Configuration files #
+#######################
+pom.xml
