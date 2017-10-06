@@ -1,13 +1,13 @@
 package com.mine.olimpiada.bo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.boot.json.JsonParser;
 
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonAnyFormatVisitor;
+import com.mine.olimpiada.dao.CompeticaoDAO;
 
 /**
  * @author Zinsly, Tatiane
@@ -26,21 +26,41 @@ public class CompeticaoBO {
 
 	private String modalidade;
 	private String local;
-	private LocalDate date;
-	private LocalTime time;
+	private LocalDateTime dataHoraIni;
+	private LocalDateTime dataHoraFim;
+	/*private LocalTime horaIni;
+	private LocalTime horaFim;	*/
 	private String pais1;
 	private String pais2;
-	private Etapas etapas;
+	private Etapas etapa;
 	protected JSONObject resultData;
-
+	
 	public String salvarCompeticao(String data) {
+		System.out.println("Step 2 - BO.salvarCompeticao");
 		try {
-			JSONObject newComp = new JSONObject(data);
+			JSONObject newItem = new JSONObject(data);
+			this.setModalidade(newItem.getString("modalidade"));
+			this.setLocal(newItem.getString("local"));
+			this.setPais1(newItem.getString("pais1"));
+			this.setPais2(newItem.getString("pais2"));
+			this.setEtapa(Etapas.valueOf(newItem.getString("etapa").toUpperCase()));
+			
+			LocalDate ld = LocalDate.parse(newItem.getString("dataIni"));
+			LocalTime lt = LocalTime.parse(newItem.getString("horaIni"));
+			LocalDateTime ldt = LocalDateTime.of(ld, lt);
+			this.setDataHoraIni(ldt);
+			
+			ld = LocalDate.parse(newItem.getString("dataFim"));
+			lt = LocalTime.parse(newItem.getString("horaFim"));
+			ldt = LocalDateTime.of(ld, lt);
+			this.setDataHoraFim(ldt);
+		
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "";
+		
+		return CompeticaoDAO.salvar(this);
 	}
 
 	public String getModalidade() {
@@ -55,24 +75,24 @@ public class CompeticaoBO {
 		return local;
 	}
 
+	public LocalDateTime getDataHoraIni() {
+		return dataHoraIni;
+	}
+
+	public void setDataHoraIni(LocalDateTime dataHoraIni) {
+		this.dataHoraIni = dataHoraIni;
+	}
+
+	public LocalDateTime getDataHoraFim() {
+		return dataHoraFim;
+	}
+
+	public void setDataHoraFim(LocalDateTime dataHoraFim) {
+		this.dataHoraFim = dataHoraFim;
+	}
+
 	public void setLocal(String local) {
 		this.local = local;
-	}
-
-	public LocalDate getDate() {
-		return date;
-	}
-
-	public void setDate(LocalDate date) {
-		this.date = date;
-	}
-
-	public LocalTime getTime() {
-		return time;
-	}
-
-	public void setTime(LocalTime time) {
-		this.time = time;
 	}
 
 	public String getPais1() {
@@ -91,11 +111,11 @@ public class CompeticaoBO {
 		this.pais2 = pais2;
 	}
 
-	public Etapas getEtapas() {
-		return etapas;
+	public Etapas getEtapa() {
+		return etapa;
 	}
 
-	public void setEtapas(Etapas etapas) {
-		this.etapas = etapas;
+	public void setEtapa(Etapas etapa) {
+		this.etapa = etapa;
 	}
 }

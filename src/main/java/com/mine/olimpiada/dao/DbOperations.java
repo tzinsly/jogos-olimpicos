@@ -18,7 +18,10 @@ public class DbOperations {
 
 	public static int insert(String tableName, CompeticaoBO comp) {
 		int status = 0;
-		String sql = "INSERT INTO " + tableName + "(modalidade) values ('" + comp.getModalidade() + "')";
+		System.out.println("HoraIni no DAO? " + comp.getDataHoraIni());
+		String sql = "insert into " + tableName + " (modalidade, local, pais1, pais2, etapa, dataHoraIni, dataHoraFim) "
+				+ "values ('" + comp.getModalidade() + "', '" + comp.getLocal() + "', '" + comp.getPais1() + "', '" + comp.getPais2()
+				+ "', '" + comp.getEtapa() + "', '" + comp.getDataHoraIni() + "', '" + comp.getDataHoraFim() + "')";
 		System.out.println(sql);
 		try (Connection conn = DbConnectionSQLite.connectToDb();
 			Statement stmt = conn.createStatement();) {
@@ -30,7 +33,7 @@ public class DbOperations {
 	}
 
 	public void select(String tableName) {
-		String sql = "SELECT * FROM " + tableName;
+		String sql = "select * from " + tableName;
 		try (Connection conn = DbConnectionSQLite.connectToDb();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql)) {
