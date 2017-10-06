@@ -5,6 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.json.JSONObject;
+
+import com.mine.olimpiada.bo.CompeticaoBO;
+
 /**
  * @author Zinsly, Tatiane
  * @email tzinsly@br.ibm.com
@@ -12,15 +16,17 @@ import java.sql.Statement;
 
 public class DbOperations {
 
-	public void insert(String tableName, String data) {
-		String sql = "INSERT INTO " + tableName + "(fields) values (";
+	public static int insert(String tableName, CompeticaoBO comp) {
+		int status = 0;
+		String sql = "INSERT INTO " + tableName + "(modalidade) values ('" + comp.getModalidade() + "')";
+		System.out.println(sql);
 		try (Connection conn = DbConnectionSQLite.connectToDb();
-				Statement stmt = conn.createStatement();) {
-			stmt.executeUpdate(sql);
+			Statement stmt = conn.createStatement();) {
+			status =  stmt.executeUpdate(sql);
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
-
+		return status;
 	}
 
 	public void select(String tableName) {
