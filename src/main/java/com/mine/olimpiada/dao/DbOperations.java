@@ -4,10 +4,15 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import org.json.JSONObject;
 
 import com.mine.olimpiada.bo.CompeticaoBO;
+import com.mine.olimpiada.bo.CompeticaoBO.Etapas;
+
+import groovyjarjarantlr.collections.List;
 
 /**
  * @author Zinsly, Tatiane
@@ -32,20 +37,38 @@ public class DbOperations {
 		return status;
 	}
 
-	public void select(String tableName) {
+	public ArrayList<CompeticaoBO> select(String tableName, String modalidade) {
+		CompeticaoBO comp = null;
+		ArrayList<CompeticaoBO> listComp = new ArrayList<CompeticaoBO>();
+		LocalDateTime ldt = null;
 		String sql = "select * from " + tableName;
 		try (Connection conn = DbConnectionSQLite.connectToDb();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql)) {
 
-			// loop through the result set
 			while (rs.next()) {
-				System.out.println(rs.getInt("id") + "\t" + rs.getString("name") + "\t" + rs.getDouble("capacity"));
+				//System.out.println(rs.getInt("id") + "\t" + rs.getString("modalidade") + "\t" + rs.getString("local"));
+				comp = new CompeticaoBO();
+				comp.setId(rs.getInt("id"));
+				comp.setModalidade(rs.getString("modalidade"));
+				comp.setLocal(rs.getString("local"));
+				comp.setPais1(rs.getString("pais1"));
+				comp.setPais2(rs.getString("pais2"));
+				comp.setEtapa(Etapas.valueOf(rs.getString("etapa")));
+				
+				ldt = LocalDateTime.parse(rs.getString("dataHoraIni"));
+				comp.setDataHoraIni(ldt);
+				
+				ldt = LocalDateTime.parse(rs.getString("dataHoraFim"));
+				comp.setDataHoraFim(ldt);
+				
+				listComp.add(comp);
 			}
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 		}
-
+		
+		return listComp;
 	}
 
 }
