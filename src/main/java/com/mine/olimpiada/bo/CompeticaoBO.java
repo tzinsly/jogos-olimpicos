@@ -61,6 +61,8 @@ public class CompeticaoBO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		this.validarCompeticao();
 		return CompeticaoDAO.salvar(this);
 	}
 
@@ -69,9 +71,7 @@ public class CompeticaoBO {
 		ArrayList<CompeticaoBO> listComp = CompeticaoDAO.listar(modalidade);
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObj = new JSONObject();
-
-		System.out.println("comp bo before loop: " + listComp.get(0).getId());
-		System.out.println("comp bo before loop: " + listComp.get(1).getId());
+		
 		try {
 			for (CompeticaoBO item : listComp) {
 
@@ -97,6 +97,30 @@ public class CompeticaoBO {
 			e.printStackTrace();
 		}
 		return jsonObj.toString();
+	}
+	
+	public int validarCompeticao() {
+		
+		/*Duas competições não podem ocorrer no mesmo período, no mesmo local, para a
+		mesma modalidade. Ex: Se eu tenho uma partida de futebol que com início às 18:00 e
+		término às 20:00 no Estádio 1, eu não poderia ter outra partida de futebol se iniciando
+		às 19:30 nesse mesmo estádio*/
+		
+		//CompeticaoDAO.validarDupComp(this.getModalidade(), this.getLocal(), this.getDataHoraIni(), this.getDataHoraFim());
+		
+		
+		
+		/*
+		● O fluxo de cadastro deve permitir que se forneça o mesmo valor, para os 2 países
+		envolvidos na disputa, apenas se a etapa for Final ou Semifinal. Para as demais etapas,
+		não se deve permitir que se forneça o mesmo valor.
+		● A competição deve ter a duração de no mínimo 30 minutos.
+		● Para evitar problemas, a organização das olimpíadas que limitar a no máximo 4
+		competições por dia num mesmo local
+		● Para situações de erro, é necessário que a resposta da requisição seja coerente em
+		exibir uma mensagem condizente com o erro.*/
+		
+		return 0;
 	}
 
 	public int getId() {

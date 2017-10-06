@@ -36,12 +36,39 @@ public class DbOperations {
 		}
 		return status;
 	}
-
+	
+	/*public static int executeUpdate(String query, Object ... params) {
+		int status = 0;
+		int index = 0;
+		
+		try (Connection conn = DbConnectionSQLite.connectToDb();){
+			
+			PreparedStatement pstmt = conn.prepareStatement(query);
+			for(Object obj : params){
+				if(obj instanceof String){
+					pstmt.setString(index, (String) obj);
+				} if(obj instanceof LocalDateTime){
+					//pstmt.setTimestamp((index, (Timestamp) obj);
+				} else {
+					return 0;
+				}
+				index++;
+			}
+			status =  pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return status;
+	}
+*/
 	public ArrayList<CompeticaoBO> select(String tableName, String modalidade) {
 		CompeticaoBO comp = null;
 		ArrayList<CompeticaoBO> listComp = new ArrayList<CompeticaoBO>();
 		LocalDateTime ldt = null;
 		String sql = "select * from " + tableName;
+		if(!modalidade.isEmpty()){
+			sql = sql + " where modalidade = '" + modalidade + "'";
+		}
 		try (Connection conn = DbConnectionSQLite.connectToDb();
 				Statement stmt = conn.createStatement();
 				ResultSet rs = stmt.executeQuery(sql)) {
