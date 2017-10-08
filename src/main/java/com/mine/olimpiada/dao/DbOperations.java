@@ -44,10 +44,26 @@ public class DbOperations {
 
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				System.out.println("Tem registro");
 				return true;
 			} else {
 				return false;
+			}
+		}
+	}
+	
+	public static int executeQueryResult(String sql, Object... params) throws SQLException {
+		try (Connection conn = DbConnectionSQLite.connectToDb();
+				PreparedStatement pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE);) {
+
+			System.out.println(sql);
+			populateParms(pstmt, params);
+
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				System.out.println("TEM DADOSSSSSS");
+				return rs.getInt(1);
+			} else {
+				return -1;
 			}
 		}
 	}

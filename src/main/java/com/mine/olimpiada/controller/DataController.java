@@ -22,6 +22,8 @@ import com.mine.olimpiada.utils.ErrorInfo;
  */
 
 public class DataController {
+	
+	private static final int LIMIT_COMP = 4;
 
 	public static String salvarCompeticao(String data) {
 		CompeticaoBO newCompBO = getRecord(data);
@@ -40,9 +42,7 @@ public class DataController {
 		mesma modalidade. Ex: Se eu tenho uma partida de futebol que com início às 18:00 e
 		término às 20:00 no Estádio 1, eu não poderia ter outra partida de futebol se iniciando
 		às 19:30 nesse mesmo estádio*/
-		if (CompeticaoBO.verificarDup(data)) {
-			errorInfo.setMessage(
-					"Erro: Competição não inserida - Já existe uma competição com essas características (mesmo horario, local e modalidade)");
+		if (!validarDup(data, errorInfo)) {
 			return false;
 		}
 
@@ -63,12 +63,10 @@ public class DataController {
 		/*
 		● Para evitar problemas, a organização das olimpíadas que limitar a no máximo 4
 		competições por dia num mesmo local*/
-		/*if (CompeticaoBO.verificarQtdComp(data)) {
-			errorInfo.setMessage(
-					"Erro: Competição não inserida - Limite de 4 competições já excedida no dia)");
+		if(!validarQtdCompDia(data, errorInfo)){
 			return false;
-		}*/
-		
+		}
+
 		errorInfo.setMessage("Operação realizada com Sucesso");
 		return true;
 
@@ -101,7 +99,17 @@ public class DataController {
 		return newItemBO;
 	}
 
-	static boolean validarPaises(CompeticaoBO data, ErrorInfo errorInfo) {
+	private static boolean validarDup(CompeticaoBO data, ErrorInfo errorInfo) {
+		if (CompeticaoBO.verificarDup(data)) {
+			errorInfo.setMessage(
+					"Erro: Competição não inserida - Já existe uma competição com essas características (mesmo horario, local e modalidade)");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private static boolean validarPaises(CompeticaoBO data, ErrorInfo errorInfo) {
 		if (data.getPais1().toLowerCase().equals(data.getPais2().toLowerCase()) && !data.getEtapa().equals(Etapas.FINAL)
 				&& !data.getEtapa().equals(Etapas.SEMIFINAL)) {
 			errorInfo.setMessage(
@@ -114,9 +122,22 @@ public class DataController {
 
 	private static boolean validarDuracao(CompeticaoBO data, ErrorInfo errorInfo) {
 		Duration d = Duration.between(data.getDataHoraIni(), data.getDataHoraFim());
-		if (d.getSeconds() < 1800){
-			errorInfo.setMessage(
-					"Erro: Competição não inserida - Duração da competição deve ser maior que 30 minutos.");
+		if (d.getSeconds() < 1800) {
+			errorInfo
+					.setMessage("Erro: Competição não inserida - Duração da competição deve ter no mínimo 30 minutos.");
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private static boolean validarQtdCompDia(CompeticaoBO data, ErrorInfo errorInfo) {
+		int qtdComp = CompeticaoBO.verificarQtdComp(data);
+		if (qtdComp >= LIMIT_COMP) {
+			errorInfo.setMessage("Erro: Competição não inserida - Limite de 4 competições já excedida no dia");
+			return false;
+		} else if (qtdComp == -1) {
+			errorInfo.setMessage("Erro: Problema de consulta de dados");
 			return false;
 		} else {
 			return true;

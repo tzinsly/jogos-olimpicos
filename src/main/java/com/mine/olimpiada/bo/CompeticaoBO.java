@@ -83,9 +83,9 @@ public class CompeticaoBO {
 				data.getDataHoraFim());
 	}
 	
-	/*public static boolean verificarQtdComp(CompeticaoBO data) {
-		return CompeticaoDAO.verificarQtdComp(TABLENAME, data.getDataHoraIni());
-	}*/
+	public static int verificarQtdComp(CompeticaoBO data) {
+		return CompeticaoDAO.verificarQtdComp(TABLENAME, data.getLocal(), data.getDataHoraIni());
+	}
 	
 	public int getId() {
 		return id;

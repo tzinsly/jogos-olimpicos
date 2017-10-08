@@ -7,7 +7,6 @@ import java.sql.Connection;
  * @email tzinsly@br.ibm.com
  */
 
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 

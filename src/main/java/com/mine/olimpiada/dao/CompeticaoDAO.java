@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 import javax.naming.spi.DirStateFactory.Result;
 
+import org.springframework.util.SystemPropertyUtils;
+
 import com.mine.olimpiada.bo.CompeticaoBO;
 import com.mine.olimpiada.bo.CompeticaoBO.Etapas;
 
@@ -27,12 +29,12 @@ public class CompeticaoDAO {
 				+ "values (?, ?, ?, ?, ?, ?, ?)";
 
 		try {
-			status = DbOperations.executeUpdate(sql, comp.getModalidade().toLowerCase(), comp.getLocal(), comp.getPais1(),
-					comp.getPais2(), comp.getEtapa(), comp.getDataHoraIni(), comp.getDataHoraFim());
+			status = DbOperations.executeUpdate(sql, comp.getModalidade().toLowerCase(), comp.getLocal(),
+					comp.getPais1(), comp.getPais2(), comp.getEtapa(), comp.getDataHoraIni(), comp.getDataHoraFim());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (status > 0) {
 			return "Registro Inserido com Sucesso";
 		} else {
@@ -67,7 +69,7 @@ public class CompeticaoDAO {
 				+ " or dataHoraFim between ? and ?)";
 
 		try {
-			result = DbOperations.executeQuery(sql, modalidade.toLowerCase(), local, dataHoraIni, dataHoraFim );
+			result = DbOperations.executeQuery(sql, modalidade.toLowerCase(), local, dataHoraIni, dataHoraFim);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -75,14 +77,20 @@ public class CompeticaoDAO {
 		return result;
 	}
 
-	public static boolean verificarQtdComp(String tablename, LocalDateTime dataHoraIni) {
-		boolean result = false;
+	public static int verificarQtdComp(String tableName, String local, LocalDateTime dataHoraIni) {
+		int qtdComp = -1;
 		LocalDate ld = LocalDate.from(dataHoraIni);
-		System.out.println(ld);
-		//String sql = "select * from " + tableName + "where dataHoraIni like " 
-				
-		//result = DbOperations.executeQuery(sql, dataHoraIni);
-		
-		return result;
+		//System.out.println(ld);
+		String sql = "select count(*) from " + tableName + " where local = ? and dataHoraIni like ?";
+
+		try {
+			qtdComp = DbOperations.executeQueryResult(sql, local, "%"+ld+"%");
+			System.out.println("> Qtd: " + qtdComp);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return qtdComp;
+		}
+
+		return qtdComp;
 	}
 }
