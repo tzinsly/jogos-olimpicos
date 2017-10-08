@@ -23,8 +23,8 @@ public class CompeticaoBO {
 
 	public enum Etapas {
 		ELIMINATORIAS,
-		OITAVAS,
-		QUARTAS,
+		OITAVAS_DE_FINAL,
+		QUARTAS_DE_FINAL,
 		SEMIFINAL,
 		FINAL;
 	}
@@ -48,7 +48,7 @@ public class CompeticaoBO {
 		return CompeticaoDAO.salvar(TABLENAME, data);
 	}
 
-	public String listarCompeticao(String modalidade) {
+	public static String listarCompeticao(String modalidade) {
 		ArrayList<CompeticaoBO> listComp = CompeticaoDAO.listar(TABLENAME, modalidade);
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObj = new JSONObject();

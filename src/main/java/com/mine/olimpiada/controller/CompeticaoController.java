@@ -50,8 +50,7 @@ public class CompeticaoController {
 	}
 
 	public String listaCompeticao(String modalidade) {
-		CompeticaoBO compBO = new CompeticaoBO();
-		return compBO.listarCompeticao(modalidade);
+		return CompeticaoBO.listarCompeticao(modalidade);
 	}
 	
 }

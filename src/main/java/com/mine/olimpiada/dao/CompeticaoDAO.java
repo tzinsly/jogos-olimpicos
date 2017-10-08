@@ -66,10 +66,11 @@ public class CompeticaoDAO {
 		boolean result = false;
 		String sql = "select * from " + tableName
 				+ " where modalidade = ? and local = ? and (dataHoraIni between ? and ?"
-				+ " or dataHoraFim between ? and ?)";
+				+ " or dataHoraFim between ? and ? "
+				+ "or (dataHoraIni < ? and dataHoraFim > ?))";
 
 		try {
-			result = DbOperations.executeQuery(sql, modalidade.toLowerCase(), local, dataHoraIni, dataHoraFim);
+			result = DbOperations.executeQuery(sql, modalidade.toLowerCase(), local, dataHoraIni, dataHoraFim, dataHoraIni, dataHoraFim, dataHoraIni, dataHoraFim);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
