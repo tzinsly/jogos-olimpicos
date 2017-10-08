@@ -14,8 +14,8 @@ public class Utils {
 		JSONObject jsonErrorResponse = new JSONObject();
 
 		try {
-			jsonErrorResponse.put("msg", errorInfo.getMessage());
-			jsonErrorResponse.put("detail", errorInfo.getDetails());
+			jsonErrorResponse.put("erro", errorInfo.getMessage());
+			jsonErrorResponse.put("detalhe", errorInfo.getDetails());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
