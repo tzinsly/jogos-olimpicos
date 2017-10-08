@@ -25,14 +25,11 @@ public class DbOperations {
 
 	public static int executeUpdate(String query, Object... params) throws SQLException {
 		int status = 0;
-		//int index = 1;
-
+		
 		try (Connection conn = DbConnectionSQLite.connectToDb();
 				PreparedStatement pstmt = conn.prepareStatement(query);) {
 
 			populateParms(pstmt, params);
-			System.out.println("sql: " + query);
-			System.out.println("parms: " + pstmt.getParameterMetaData().getParameterCount());
 			status = pstmt.executeUpdate();
 		}
 		return status;
@@ -42,10 +39,12 @@ public class DbOperations {
 		try (Connection conn = DbConnectionSQLite.connectToDb();
 				PreparedStatement pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE);) {
 
+			System.out.println(sql);
 			populateParms(pstmt, params);
 
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
+				System.out.println("Tem registro");
 				return true;
 			} else {
 				return false;
@@ -64,7 +63,6 @@ public class DbOperations {
 
 			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				System.out.println("There is data");
 				comp = new CompeticaoBO();
 				comp.setId(rs.getInt("id"));
 				comp.setModalidade(rs.getString("modalidade"));

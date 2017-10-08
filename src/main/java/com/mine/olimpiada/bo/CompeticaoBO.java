@@ -37,54 +37,22 @@ public class CompeticaoBO {
 	private String pais1;
 	private String pais2;
 	private Etapas etapa;
-	
+
 	public CompeticaoBO() {
 		id = 0;
 	}
-	
-	private final String tableName = "competicao";
 
-	public String salvarCompeticao(String data) {
-		System.out.println("Step 2 - BO.salvarCompeticao");
-		try {
-			JSONObject newItem = new JSONObject(data);
-			this.setModalidade(newItem.getString("modalidade"));
-			this.setLocal(newItem.getString("local"));
-			this.setPais1(newItem.getString("pais1"));
-			this.setPais2(newItem.getString("pais2"));
-			this.setEtapa(Etapas.valueOf(newItem.getString("etapa").toUpperCase()));
+	private static final String TABLENAME = "competicao";
 
-			LocalDate ld = LocalDate.parse(newItem.getString("dataIni"));
-			LocalTime lt = LocalTime.parse(newItem.getString("horaIni"));
-			LocalDateTime ldt = LocalDateTime.of(ld, lt);
-			this.setDataHoraIni(ldt);
-
-			ld = LocalDate.parse(newItem.getString("dataFim"));
-			lt = LocalTime.parse(newItem.getString("horaFim"));
-			ldt = LocalDateTime.of(ld, lt);
-			this.setDataHoraFim(ldt);
-
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e){
-			return "Error na conversão de datas e horas";
-		}
-		
-		if (this.validarCompeticao()){
-			return CompeticaoDAO.salvar(tableName, this);
-		} else {
-			return "Erro na validação";
-		}
-		
+	public static String salvar(CompeticaoBO data) {
+		return CompeticaoDAO.salvar(TABLENAME, data);
 	}
 
 	public String listarCompeticao(String modalidade) {
-
-		ArrayList<CompeticaoBO> listComp = CompeticaoDAO.listar(tableName, modalidade);
+		ArrayList<CompeticaoBO> listComp = CompeticaoDAO.listar(TABLENAME, modalidade);
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObj = new JSONObject();
-		
+
 		try {
 			for (CompeticaoBO item : listComp) {
 
@@ -99,9 +67,8 @@ public class CompeticaoBO {
 				jsonComp.put("horaIni", item.getDataHoraIni().toLocalTime());
 				jsonComp.put("dataFim", item.getDataHoraFim().toLocalDate());
 				jsonComp.put("horaFim", item.getDataHoraFim().toLocalTime());
-				
-				jsonArray.put(jsonComp);
 
+				jsonArray.put(jsonComp);
 			}
 			jsonObj.put("Jogos", jsonArray);
 		} catch (JSONException e) {
@@ -110,36 +77,16 @@ public class CompeticaoBO {
 		}
 		return jsonObj.toString();
 	}
-	
-	public boolean validarCompeticao() {
-		
-		/*Duas competições não podem ocorrer no mesmo período, no mesmo local, para a
-		mesma modalidade. Ex: Se eu tenho uma partida de futebol que com início às 18:00 e
-		término às 20:00 no Estádio 1, eu não poderia ter outra partida de futebol se iniciando
-		às 19:30 nesse mesmo estádio*/
-		
-		if (CompeticaoDAO.verificarDupComp(tableName, this.getModalidade(), this.getLocal(), this.getDataHoraIni(), this.getDataHoraFim()))
-		{
-			System.out.println("Has dup, returning false on validation");
-			return false;
-		} else {
-			return true;
-		}
-		
-		
-		
-		/*
-		● O fluxo de cadastro deve permitir que se forneça o mesmo valor, para os 2 países
-		envolvidos na disputa, apenas se a etapa for Final ou Semifinal. Para as demais etapas,
-		não se deve permitir que se forneça o mesmo valor.
-		● A competição deve ter a duração de no mínimo 30 minutos.
-		● Para evitar problemas, a organização das olimpíadas que limitar a no máximo 4
-		competições por dia num mesmo local
-		● Para situações de erro, é necessário que a resposta da requisição seja coerente em
-		exibir uma mensagem condizente com o erro.*/
 
+	public static boolean verificarDup(CompeticaoBO data) {
+		return CompeticaoDAO.verificarDupComp(TABLENAME, data.getModalidade(), data.getLocal(), data.getDataHoraIni(),
+				data.getDataHoraFim());
 	}
-
+	
+	/*public static boolean verificarQtdComp(CompeticaoBO data) {
+		return CompeticaoDAO.verificarQtdComp(TABLENAME, data.getDataHoraIni());
+	}*/
+	
 	public int getId() {
 		return id;
 	}

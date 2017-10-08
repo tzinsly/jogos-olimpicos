@@ -1,6 +1,7 @@
 package com.mine.olimpiada.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.Data;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,8 +53,10 @@ public class CompeticaoController {
 	}
 	
 	public String salvarCompeticao(String data) {
-		CompeticaoBO compBO = new CompeticaoBO();
-		return compBO.salvarCompeticao(data);
+		if(data == null){
+			return "Erro: Dados de entrada nulo";
+		}
+		return DataController.salvarCompeticao(data);
 	}
 
 	public String listaCompeticao(String modalidade) {

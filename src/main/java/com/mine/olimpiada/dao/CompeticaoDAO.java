@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -26,29 +27,30 @@ public class CompeticaoDAO {
 				+ "values (?, ?, ?, ?, ?, ?, ?)";
 
 		try {
-			status = DbOperations.executeUpdate(sql, comp.getModalidade(), comp.getLocal(), comp.getPais1(),
+			status = DbOperations.executeUpdate(sql, comp.getModalidade().toLowerCase(), comp.getLocal(), comp.getPais1(),
 					comp.getPais2(), comp.getEtapa(), comp.getDataHoraIni(), comp.getDataHoraFim());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
 		if (status > 0) {
-			return "Successful Insert";
+			return "Registro Inserido com Sucesso";
 		} else {
-			return "Failed Insert";
+			return "Erro: Falha ao Inserir o Registro";
 		}
 	}
 
 	public static ArrayList<CompeticaoBO> listar(String tableName, String modalidade) {
 
-		String sql = "select * from " + tableName;
+		StringBuilder sql = new StringBuilder("select * from " + tableName);
 		if (!modalidade.isEmpty()) {
-			sql = sql + " where modalidade = ?";
+			sql.append(" where modalidade = ?");
 		}
+		sql.append(" order by dataHoraIni");
 
 		ArrayList<CompeticaoBO> listArrayComp = null;
 		try {
-			listArrayComp = DbOperations.executeGetLista(sql, modalidade);
+			listArrayComp = DbOperations.executeGetLista(sql.toString(), modalidade.toLowerCase());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,14 +64,25 @@ public class CompeticaoDAO {
 		boolean result = false;
 		String sql = "select * from " + tableName
 				+ " where modalidade = ? and local = ? and (dataHoraIni between ? and ?"
-				+ "or  dataHoraFim between ? and ?)";
+				+ " or dataHoraFim between ? and ?)";
 
 		try {
-			result = DbOperations.executeQuery(sql, modalidade, local, dataHoraIni, dataHoraFim );
+			result = DbOperations.executeQuery(sql, modalidade.toLowerCase(), local, dataHoraIni, dataHoraFim );
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return result;
+	}
+
+	public static boolean verificarQtdComp(String tablename, LocalDateTime dataHoraIni) {
+		boolean result = false;
+		LocalDate ld = LocalDate.from(dataHoraIni);
+		System.out.println(ld);
+		//String sql = "select * from " + tableName + "where dataHoraIni like " 
+				
+		//result = DbOperations.executeQuery(sql, dataHoraIni);
+		
 		return result;
 	}
 }
