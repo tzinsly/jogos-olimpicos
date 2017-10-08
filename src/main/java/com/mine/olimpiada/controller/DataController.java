@@ -106,7 +106,7 @@ public class DataController {
 			
 			String etapa = newItemJson.getString("etapa");
 			etapa = Normalizer.normalize(etapa, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
-			newItemBO.setEtapa(Etapas.valueOf(etapa.toUpperCase()));
+			newItemBO.setEtapa(Etapas.valueOf(etapa.toUpperCase().replace(" ", "_")));
 
 			LocalDate ld = LocalDate.parse(newItemJson.getString("dataIni"));
 			LocalTime lt = LocalTime.parse(newItemJson.getString("horaIni"));
@@ -138,7 +138,7 @@ public class DataController {
 
 		return newItemBO;
 	}
-
+	
 	//passar para o BO ???
 	private static boolean validarDup(CompeticaoBO data, ErrorInfo errorInfo) {
 		if (CompeticaoBO.verificarDup(data)) {
