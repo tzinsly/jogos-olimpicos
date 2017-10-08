@@ -1,9 +1,11 @@
 package com.mine.olimpiada.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -21,60 +23,48 @@ import groovyjarjarantlr.collections.List;
 
 public class DbOperations {
 
-	public static int insert(String tableName, CompeticaoBO comp) {
+	public static int executeUpdate(String query, Object... params) throws SQLException {
 		int status = 0;
-		System.out.println("HoraIni no DAO? " + comp.getDataHoraIni());
-		String sql = "insert into " + tableName + " (modalidade, local, pais1, pais2, etapa, dataHoraIni, dataHoraFim) "
-				+ "values ('" + comp.getModalidade() + "', '" + comp.getLocal() + "', '" + comp.getPais1() + "', '" + comp.getPais2()
-				+ "', '" + comp.getEtapa() + "', '" + comp.getDataHoraIni() + "', '" + comp.getDataHoraFim() + "')";
-		System.out.println(sql);
-		try (Connection conn = DbConnectionSQLite.connectToDb();
-			Statement stmt = conn.createStatement();) {
-			status =  stmt.executeUpdate(sql);
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-		return status;
-	}
-	
-	/*public static int executeUpdate(String query, Object ... params) {
-		int status = 0;
-		int index = 0;
-		
-		try (Connection conn = DbConnectionSQLite.connectToDb();){
-			
-			PreparedStatement pstmt = conn.prepareStatement(query);
-			for(Object obj : params){
-				if(obj instanceof String){
-					pstmt.setString(index, (String) obj);
-				} if(obj instanceof LocalDateTime){
-					//pstmt.setTimestamp((index, (Timestamp) obj);
-				} else {
-					return 0;
-				}
-				index++;
-			}
-			status =  pstmt.executeUpdate();
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-		return status;
-	}
-*/
-	public ArrayList<CompeticaoBO> select(String tableName, String modalidade) {
-		CompeticaoBO comp = null;
-		ArrayList<CompeticaoBO> listComp = new ArrayList<CompeticaoBO>();
-		LocalDateTime ldt = null;
-		String sql = "select * from " + tableName;
-		if(!modalidade.isEmpty()){
-			sql = sql + " where modalidade = '" + modalidade + "'";
-		}
-		try (Connection conn = DbConnectionSQLite.connectToDb();
-				Statement stmt = conn.createStatement();
-				ResultSet rs = stmt.executeQuery(sql)) {
+		//int index = 1;
 
+		try (Connection conn = DbConnectionSQLite.connectToDb();
+				PreparedStatement pstmt = conn.prepareStatement(query);) {
+
+			populateParms(pstmt, params);
+			System.out.println("sql: " + query);
+			System.out.println("parms: " + pstmt.getParameterMetaData().getParameterCount());
+			status = pstmt.executeUpdate();
+		}
+		return status;
+	}
+
+	public static boolean executeQuery(String sql, Object... params) throws SQLException {
+		try (Connection conn = DbConnectionSQLite.connectToDb();
+				PreparedStatement pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE);) {
+
+			populateParms(pstmt, params);
+
+			ResultSet rs = pstmt.executeQuery();
+			if (rs.next()) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	public static ArrayList<CompeticaoBO> executeGetLista(String sql, Object... params) throws SQLException {
+		CompeticaoBO comp;
+		LocalDateTime ldt = null;
+		ArrayList<CompeticaoBO> listArrayComp = new ArrayList<>();
+		try (Connection conn = DbConnectionSQLite.connectToDb();
+				PreparedStatement pstmt = conn.prepareStatement(sql);) {
+
+			populateParms(pstmt, params);
+
+			ResultSet rs = pstmt.executeQuery();
 			while (rs.next()) {
-				//System.out.println(rs.getInt("id") + "\t" + rs.getString("modalidade") + "\t" + rs.getString("local"));
+				System.out.println("There is data");
 				comp = new CompeticaoBO();
 				comp.setId(rs.getInt("id"));
 				comp.setModalidade(rs.getString("modalidade"));
@@ -82,20 +72,41 @@ public class DbOperations {
 				comp.setPais1(rs.getString("pais1"));
 				comp.setPais2(rs.getString("pais2"));
 				comp.setEtapa(Etapas.valueOf(rs.getString("etapa")));
-				
+
 				ldt = LocalDateTime.parse(rs.getString("dataHoraIni"));
 				comp.setDataHoraIni(ldt);
-				
+
 				ldt = LocalDateTime.parse(rs.getString("dataHoraFim"));
 				comp.setDataHoraFim(ldt);
-				
-				listComp.add(comp);
+
+				listArrayComp.add(comp);
 			}
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+
+			return listArrayComp;
 		}
-		
-		return listComp;
+
+	}
+
+	public static String populateParms(PreparedStatement pstmt, Object... params) throws SQLException{
+		int index = 1;
+		for (Object obj : params) {
+			if (obj instanceof String) {
+				if (!((String) obj).isEmpty()) {
+					pstmt.setString(index, (String) obj);
+					System.out.println(obj);
+				}
+			} else if (obj instanceof Etapas) {
+				System.out.println(obj);
+				pstmt.setString(index, ((Etapas) obj).toString());
+			} else if (obj instanceof LocalDateTime) {
+				System.out.println(obj);
+				pstmt.setString(index, ((LocalDateTime) obj).toString());
+			} else {
+				return "Invalid Parm";
+			}
+			index++;
+		}
+		return "Populated parms";
 	}
 
 }

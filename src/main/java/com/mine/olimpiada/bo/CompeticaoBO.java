@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 import com.mine.olimpiada.dao.CompeticaoDAO;
 
+import groovyjarjarcommonscli.ParseException;
+
 /**
  * @author Zinsly, Tatiane
  * @email tzinsly@br.ibm.com
@@ -35,7 +37,12 @@ public class CompeticaoBO {
 	private String pais1;
 	private String pais2;
 	private Etapas etapa;
-	protected JSONObject resultData;
+	
+	public CompeticaoBO() {
+		id = 0;
+	}
+	
+	private final String tableName = "competicao";
 
 	public String salvarCompeticao(String data) {
 		System.out.println("Step 2 - BO.salvarCompeticao");
@@ -60,15 +67,21 @@ public class CompeticaoBO {
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (Exception e){
+			return "Error na conversão de datas e horas";
 		}
 		
-		this.validarCompeticao();
-		return CompeticaoDAO.salvar(this);
+		if (this.validarCompeticao()){
+			return CompeticaoDAO.salvar(tableName, this);
+		} else {
+			return "Erro na validação";
+		}
+		
 	}
 
 	public String listarCompeticao(String modalidade) {
 
-		ArrayList<CompeticaoBO> listComp = CompeticaoDAO.listar(modalidade);
+		ArrayList<CompeticaoBO> listComp = CompeticaoDAO.listar(tableName, modalidade);
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObj = new JSONObject();
 		
@@ -76,7 +89,6 @@ public class CompeticaoBO {
 			for (CompeticaoBO item : listComp) {
 
 				JSONObject jsonComp = new JSONObject();
-				System.out.println("id? " + item.getId());
 				jsonComp.put("id", item.getId());
 				jsonComp.put("modalidade", item.getModalidade());
 				jsonComp.put("local", item.getLocal());
@@ -99,14 +111,20 @@ public class CompeticaoBO {
 		return jsonObj.toString();
 	}
 	
-	public int validarCompeticao() {
+	public boolean validarCompeticao() {
 		
 		/*Duas competições não podem ocorrer no mesmo período, no mesmo local, para a
 		mesma modalidade. Ex: Se eu tenho uma partida de futebol que com início às 18:00 e
 		término às 20:00 no Estádio 1, eu não poderia ter outra partida de futebol se iniciando
 		às 19:30 nesse mesmo estádio*/
 		
-		//CompeticaoDAO.validarDupComp(this.getModalidade(), this.getLocal(), this.getDataHoraIni(), this.getDataHoraFim());
+		if (CompeticaoDAO.verificarDupComp(tableName, this.getModalidade(), this.getLocal(), this.getDataHoraIni(), this.getDataHoraFim()))
+		{
+			System.out.println("Has dup, returning false on validation");
+			return false;
+		} else {
+			return true;
+		}
 		
 		
 		
@@ -119,8 +137,7 @@ public class CompeticaoBO {
 		competições por dia num mesmo local
 		● Para situações de erro, é necessário que a resposta da requisição seja coerente em
 		exibir uma mensagem condizente com o erro.*/
-		
-		return 0;
+
 	}
 
 	public int getId() {
