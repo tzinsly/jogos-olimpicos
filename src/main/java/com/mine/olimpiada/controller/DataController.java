@@ -10,11 +10,13 @@ import java.time.temporal.ChronoUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.sqlite.SQLiteConfig.SynchronousMode;
 
 import com.mine.olimpiada.bo.CompeticaoBO;
 import com.mine.olimpiada.bo.CompeticaoBO.Etapas;
 import com.mine.olimpiada.dao.CompeticaoDAO;
 import com.mine.olimpiada.utils.ErrorInfo;
+import com.mine.olimpiada.utils.Utils;
 
 /**
  * @author Zinsly, Tatiane
@@ -26,14 +28,39 @@ public class DataController {
 	private static final int LIMIT_COMP = 4;
 
 	public static String salvarCompeticao(String data) {
-		CompeticaoBO newCompBO = getRecord(data);
 		ErrorInfo errorInfo = new ErrorInfo();
-
-		if (validarCompeticao(newCompBO, errorInfo)) {
-			return CompeticaoBO.salvar(newCompBO);
+		CompeticaoBO newCompBO = getRecord(data, errorInfo);
+		
+		if(newCompBO != null && validarDados(newCompBO, errorInfo) && validarCompeticao(newCompBO, errorInfo)){
+				return CompeticaoBO.salvar(newCompBO);
 		} else {
-			return errorInfo.getMessage();
+			return Utils.errorJsonResponse(errorInfo);
 		}
+	}
+	
+	public static boolean validarDados(CompeticaoBO data, ErrorInfo errorInfo){
+		boolean status = false;
+		//Etapa
+		switch (data.getEtapa()){
+		case ELIMINATORIAS:
+		case OITAVAS:
+		case QUARTAS:
+		case SEMIFINAL:
+		case FINAL:
+			status = true;
+			break;
+		default:
+			errorInfo.setMessage("Erro: Etapa inválida");
+			errorInfo.setDetails("Etapas válidas: Eliminatórias, Oitavas, Quartas, Semifinal e Final");
+			status = false;
+			break;
+		}
+		
+		//Hora
+		//Data
+		
+		return status;
+		
 	}
 
 	public static boolean validarCompeticao(CompeticaoBO data, ErrorInfo errorInfo) {
@@ -67,14 +94,14 @@ public class DataController {
 			return false;
 		}
 
-		errorInfo.setMessage("Operação realizada com Sucesso");
 		return true;
 
 	}
 
-	public static CompeticaoBO getRecord(String data) {
-		CompeticaoBO newItemBO = new CompeticaoBO();
+	public static CompeticaoBO getRecord(String data, ErrorInfo errorInfo) {
+		CompeticaoBO newItemBO = null;
 		try {
+			newItemBO = new CompeticaoBO();
 			JSONObject newItemJson = new JSONObject(data);
 			newItemBO.setModalidade(newItemJson.getString("modalidade"));
 			newItemBO.setLocal(newItemJson.getString("local"));
@@ -93,7 +120,17 @@ public class DataController {
 			newItemBO.setDataHoraFim(ldt);
 
 		} catch (JSONException e) {
-			e.printStackTrace();
+			errorInfo.setMessage("Erro: Campo não encontrado "); 
+		    errorInfo.setDetails(e.getMessage());
+			newItemBO = null;
+		} catch (NullPointerException e){
+			errorInfo.setMessage("Erro: Campo nulo");
+			errorInfo.setDetails(e.getMessage());
+			newItemBO = null;
+		} catch (IllegalArgumentException e){
+			errorInfo.setMessage("Erro: Campo Invalido");
+			errorInfo.setDetails(e.getMessage());
+			newItemBO = null;
 		}
 
 		return newItemBO;
@@ -101,8 +138,8 @@ public class DataController {
 
 	private static boolean validarDup(CompeticaoBO data, ErrorInfo errorInfo) {
 		if (CompeticaoBO.verificarDup(data)) {
-			errorInfo.setMessage(
-					"Erro: Competição não inserida - Já existe uma competição com essas características (mesmo horario, local e modalidade)");
+			errorInfo.setMessage("Erro: Competição não inserida");
+			errorInfo.setDetails("Já existe uma competição com essas características: mesmo horario, local e modalidade");
 			return false;
 		} else {
 			return true;
@@ -112,8 +149,8 @@ public class DataController {
 	private static boolean validarPaises(CompeticaoBO data, ErrorInfo errorInfo) {
 		if (data.getPais1().toLowerCase().equals(data.getPais2().toLowerCase()) && !data.getEtapa().equals(Etapas.FINAL)
 				&& !data.getEtapa().equals(Etapas.SEMIFINAL)) {
-			errorInfo.setMessage(
-					"Erro: Competição não inserida - Essa competição não é Semifinal ou Final para envolver o mesmo país na disputa.");
+			errorInfo.setMessage("Erro: Competição não inserida");
+			errorInfo.setDetails("Essa competição não é Semifinal ou Final para envolver o mesmo país na disputa.");
 			return false;
 		} else {
 			return true;
@@ -123,8 +160,8 @@ public class DataController {
 	private static boolean validarDuracao(CompeticaoBO data, ErrorInfo errorInfo) {
 		Duration d = Duration.between(data.getDataHoraIni(), data.getDataHoraFim());
 		if (d.getSeconds() < 1800) {
-			errorInfo
-					.setMessage("Erro: Competição não inserida - Duração da competição deve ter no mínimo 30 minutos.");
+			errorInfo.setMessage("Erro: Competição não inserida");
+			errorInfo.setDetails("Duração da competição deve ter no mínimo 30 minutos.");
 			return false;
 		} else {
 			return true;
@@ -134,10 +171,12 @@ public class DataController {
 	private static boolean validarQtdCompDia(CompeticaoBO data, ErrorInfo errorInfo) {
 		int qtdComp = CompeticaoBO.verificarQtdComp(data);
 		if (qtdComp >= LIMIT_COMP) {
-			errorInfo.setMessage("Erro: Competição não inserida - Limite de 4 competições já excedida no dia");
+			errorInfo.setMessage("Erro: Competição não inserida");
+			errorInfo.setDetails("Limite de 4 competições já excedida no dia");
 			return false;
 		} else if (qtdComp == -1) {
 			errorInfo.setMessage("Erro: Problema de consulta de dados");
+			errorInfo.setDetails("Parametro passado incorretamente");
 			return false;
 		} else {
 			return true;

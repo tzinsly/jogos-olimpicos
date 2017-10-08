@@ -23,21 +23,18 @@ import com.mine.olimpiada.bo.CompeticaoBO;
 public class CompeticaoController {
 
 	/*TESTES*/
-	@RequestMapping(value = { "/cadastro-competicao" })
+	/*@RequestMapping(value = { "/cadastro-competicao" })
 	public String cadastroTest() {
 		return "cadastro";
-	}
-
-	@RequestMapping(value = { "/tati" }, method = RequestMethod.GET)
-	@ResponseBody
-	public String teste(@RequestParam String parm, HttpServletRequest request) {
-		return "Hello " + parm;
-	}
+	}*/
 
 	@RequestMapping(value = { "/competicao" }, method = RequestMethod.POST)
 	@ResponseBody
 	public String cadastro(@RequestBody String data) { //HttpServletRequest request) {
-		return this.salvarCompeticao(data);
+		if(data == null){
+			return "Erro: Dados de entrada nulo";
+		}
+		return DataController.salvarCompeticao(data);
 	}
 
 	@RequestMapping(value = { "/competicao/lista", "/competicao/lista/" })
@@ -50,13 +47,6 @@ public class CompeticaoController {
 	@ResponseBody
 	public String viewCompeticao(@PathVariable("modalidade") String filter){// HttpServletRequest req, @RequestBody(required=false) String data){
 		return this.listaCompeticao(filter);
-	}
-	
-	public String salvarCompeticao(String data) {
-		if(data == null){
-			return "Erro: Dados de entrada nulo";
-		}
-		return DataController.salvarCompeticao(data);
 	}
 
 	public String listaCompeticao(String modalidade) {

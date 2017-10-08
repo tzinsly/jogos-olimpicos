@@ -60,7 +60,7 @@ public class DbOperations {
 
 			ResultSet rs = pstmt.executeQuery();
 			if (rs.next()) {
-				System.out.println("TEM DADOSSSSSS");
+				//System.out.println("TEM DADOSSSSSS");
 				return rs.getInt(1);
 			} else {
 				return -1;

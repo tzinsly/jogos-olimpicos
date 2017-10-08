@@ -85,7 +85,7 @@ public class CompeticaoDAO {
 
 		try {
 			qtdComp = DbOperations.executeQueryResult(sql, local, "%"+ld+"%");
-			System.out.println("> Qtd: " + qtdComp);
+			//System.out.println("> Qtd: " + qtdComp);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return qtdComp;
