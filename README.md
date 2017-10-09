@@ -33,7 +33,7 @@ dataHoraFim text);`
 ### Testando a aplicação
 *Testes executados utilizando plugin do Firefox: RESTED
 
-##Incluindo uma Competição:
+## Incluindo uma Competição:
 1. Abrir o RESTED e inserir  a página `http://localhost:8080/competicao`
 2. Escolher como "Method" POST
 3. Incluir os seguintes campos: 
@@ -49,12 +49,12 @@ dataHoraFim text);`
  
  4. Clicar em "Send Request"
  
- ##Listando Todas as Competições:
+ ## Listando Todas as Competições:
  1. Abrir o RESTED e inserir  a página `http://localhost:8080/competicao/lista`
  2. Escolher como "Method" GET
  3. Clicar em "Send Request"
  
- ##Listando Competições por modalidade:
+ ## Listando Competições por modalidade:
  1. Abrir o RESTED e inserir  a página `http://localhost:8080/competicao/lista/{modalidade}`
  2. Escolher como "Method" GET
  3. Clicar em "Send Request"
