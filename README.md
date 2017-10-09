@@ -12,7 +12,7 @@ Nesse projeto foram utilizados os seguintes items:
 
 ### Instalação
 
-*Pré-requisito: Ambiente Java instalado e configurado, Maven, SpringBoot, SQLite
+*Pré-requisito: Ambiente Java instalado e configurado, Maven, SQLite
 
 1. Faça o clone deste projeto com `https://github.com/tzinsly/jogos-olimpicos.git`
 2. Entre na pasta do projeto e execute `mvn clean package`
