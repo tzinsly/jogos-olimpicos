@@ -3,14 +3,14 @@
 jogos-olimpicos é uma API Resful destinada a gerir as competições dos Jogos Olímpicos de Tokyo 2020.
 A aplicação cotempla o cadastro de competições assim como a consulta das mesmas, aplicando-se filtros ou realizando-se consultas gerais.
 
-### Metodologias e Frameworks utilizados
+## Metodologias e Frameworks utilizados
 Nesse projeto foram utilizados os seguintes items:
 - Spring Boot: Foi escolhido para essa aplicação devido a facilidade que ele fornece para criar aplicações desse tipo, evitando diversas configurações de ambiente manuais, por exemplo.
 - JUnit: JUnit foi o framework escolhido para os testes unitários da aplicação, devido facilidade do uso, bem como maior experiência do desenvolvedor com essa ferramenta.
 - SQLite: Banco de Dados em memória escolhido para essa aplicação. Além de atendar as necessidades da mesma, o SQLite é um dos bancos de dados em memória mais performáticos e robusto dentro de sua limitação. A experiência do desenvolvedor com o banco foi levada em consideração também.
 - Maven: o Maven foi a ferramenta escolhida para auxiliar na construção, compilação e *build* do projeto. Uma das mais utilizadas para esse tipo de atividade.
 
-### Instalação
+## Instalação
 
 *Pré-requisito: Ambiente Java instalado e configurado, Maven, SQLite
 
@@ -30,10 +30,10 @@ dataHoraFim text);`
 
 5. Rode a aplicação com `mvn spring-boot:run`
 
-### Testando a aplicação
+## Testando a aplicação
 *Testes executados utilizando plugin do Firefox: RESTED
 
-## Incluindo uma Competição:
+### Incluindo uma Competição:
 1. Abrir o RESTED e inserir  a página `http://localhost:8080/competicao`
 2. Escolher como "Method" POST
 3. Incluir os seguintes campos: 
@@ -49,12 +49,12 @@ dataHoraFim text);`
  
  4. Clicar em "Send Request"
  
- ## Listando Todas as Competições:
+ ### Listando Todas as Competições:
  1. Abrir o RESTED e inserir  a página `http://localhost:8080/competicao/lista`
  2. Escolher como "Method" GET
  3. Clicar em "Send Request"
  
- ## Listando Competições por modalidade:
+ ### Listando Competições por modalidade:
  1. Abrir o RESTED e inserir  a página `http://localhost:8080/competicao/lista/{modalidade}`
  2. Escolher como "Method" GET
  3. Clicar em "Send Request"
