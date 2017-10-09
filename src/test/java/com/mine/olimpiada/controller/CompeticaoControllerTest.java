@@ -16,7 +16,7 @@ public class CompeticaoControllerTest {
 	@Test
 	public void testCadastro() throws Exception {
 		CompeticaoController compControl = new CompeticaoController();
-		Assert.assertEquals("Erro: Dados de entrada nulo", compControl.cadastro(null));
+		Assert.assertEquals("{\"erro\":\"Campo nulo\"}", compControl.cadastro(null));
 
 		JSONObject data = new JSONObject();
 
