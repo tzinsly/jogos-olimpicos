@@ -4,14 +4,23 @@ import java.sql.Connection;
 
 /**
  * @author Zinsly, Tatiane
- * @email tzinsly@br.ibm.com
+ * @email tatianezinsly@gmail.com
  */
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * The class DbConnectionSQLite is responsible to connect specifically with a SQLite database
+ * 
+ */
 public class DbConnectionSQLite {
 	
+	/**
+	* Method to connect to a SQLite database
+	*
+	* @return conn - Connection to a SQLite database
+	*/
 	public static Connection connectToDb() {
 		//get from property
         String url = "jdbc:sqlite:C:\\dev\\sqlite\\db\\" + "jogos.db";

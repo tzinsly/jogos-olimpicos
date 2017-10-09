@@ -15,14 +15,27 @@ import org.springframework.util.SystemPropertyUtils;
 
 import com.mine.olimpiada.bo.CompeticaoBO;
 import com.mine.olimpiada.bo.CompeticaoBO.Etapas;
+import com.mine.olimpiada.controller.DataController;
+import com.mine.olimpiada.utils.ErrorInfo;
 
 /**
  * @author Zinsly, Tatiane
- * @email tzinsly@br.ibm.com
+ * @email tatianezinsly@gmail.com
  */
 
+/**
+ * The class CompeticaoDAO is responsible for all the data access object operation related to the CompeticaoBO object
+ * 
+ */
 public class CompeticaoDAO {
 
+	/**
+	* Method used to communicate between Controller and DAO layer to save object
+	*
+	* @param tableName - table name to be used on the operation
+	* @param CompeticaoBO - object to be saved
+	* @return String - Message indicating if the operation was completed successfully or if it failed
+	*/
 	public static String salvar(String tableName, CompeticaoBO comp) {
 		int status = 0;
 		String sql = "insert into " + tableName + " (modalidade, local, pais1, pais2, etapa, dataHoraIni, dataHoraFim) "
@@ -42,6 +55,13 @@ public class CompeticaoDAO {
 		}
 	}
 
+	/**
+	* Method used to communicate between Controller and DAO layer to list an object
+	*
+	* @param tableName - table name to be used on the operation
+	* @param modalidade - String representing the modularity to be filtered
+	* @return ArrayList<CompeticaoBO> - containing all the objects to be listed
+	*/
 	public static ArrayList<CompeticaoBO> listar(String tableName, String modalidade) {
 
 		StringBuilder sql = new StringBuilder("select * from " + tableName);
@@ -61,6 +81,16 @@ public class CompeticaoDAO {
 		return listArrayComp;
 	}
 
+	/**
+	* Method used to communicate between Controller and DAO layer to verify duplicated objects
+	*
+	* @param tableName - table name to be used on the operation
+	* @param modalidade - String representing the modularity of the competition to be checked
+	* @param local - place where the competition will occur
+	* @param dataHoraIni - Date/time of the competition beginning to be checked
+	* @param dataHoraFim - Date/time of the competition end to be checked 
+	* @return boolean - Returning if the competition to be inserted already exists or not
+	*/
 	public static boolean verificarDupComp(String tableName, String modalidade, String local, LocalDateTime dataHoraIni,
 			LocalDateTime dataHoraFim) {
 		boolean result = false;
@@ -78,6 +108,15 @@ public class CompeticaoDAO {
 		return result;
 	}
 
+	/**
+	* Method to verify quantity of competition per day
+	* @see {@code DataController.validarQtdCompDia(CompeticaoBO data, ErrorInfo errorInfo) }
+	*
+	* @param tableName - table name to be used on the operation
+	* @param local - place where the competition will occur
+	* @param dataHoraIni - Date to be checked
+	* @return int - Line number of the competitions those attend these requirements
+	*/
 	public static int verificarQtdComp(String tableName, String local, LocalDateTime dataHoraIni) {
 		int qtdComp = -1;
 		LocalDate ld = LocalDate.from(dataHoraIni);

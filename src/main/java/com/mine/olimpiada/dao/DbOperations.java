@@ -18,11 +18,22 @@ import groovyjarjarantlr.collections.List;
 
 /**
  * @author Zinsly, Tatiane
- * @email tzinsly@br.ibm.com
+ * @email tatianezinsly@gmail.com
  */
 
+/**
+ * The class DbOperations contains generic methods for execute queries and execute updates
+ * 
+ */
 public class DbOperations {
 
+	/**
+	* Method used to execute generic updates
+	*
+	* @param query - sql command to be executed
+	* @param Variable arguments - a list of Objects to be used on PreparedStatement
+	* @return int - Return 0 if no updated were executed or 1+ if one or more updated were executed
+	*/
 	public static int executeUpdate(String query, Object... params) throws SQLException {
 		int status = 0;
 		
@@ -35,6 +46,13 @@ public class DbOperations {
 		return status;
 	}
 
+	/**
+	* Method used to execute generic queries
+	*
+	* @param query - sql command to be executed
+	* @param Variable arguments - a list of Objects to be used on PreparedStatement
+	* @return boolean - return if there is ResultSet populated or not
+	*/
 	public static boolean executeQuery(String sql, Object... params) throws SQLException {
 		try (Connection conn = DbConnectionSQLite.connectToDb();
 				PreparedStatement pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE);) {
@@ -51,6 +69,13 @@ public class DbOperations {
 		}
 	}
 	
+	/**
+	* Method used to execute a generic count(*) query
+	*
+	* @param sql - sql command to be executed
+	* @param Variable arguments - a list of Objects to be used on PreparedStatement
+	* @return int - Return the value returning from the sql command
+	*/
 	public static int executeQueryResult(String sql, Object... params) throws SQLException {
 		try (Connection conn = DbConnectionSQLite.connectToDb();
 				PreparedStatement pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE);) {
@@ -68,6 +93,13 @@ public class DbOperations {
 		}
 	}
 
+	/**
+	* Method used to execute a query and return an object
+	*
+	* @param sql - command to be executed
+	* @param Variable arguments - a list of Objects to be used on PreparedStatement
+	* @return ArrayList<CompeticaoBO> - Array of object returned from the sql command executed
+	*/
 	public static ArrayList<CompeticaoBO> executeGetLista(String sql, Object... params) throws SQLException {
 		CompeticaoBO comp;
 		LocalDateTime ldt = null;
@@ -101,6 +133,13 @@ public class DbOperations {
 
 	}
 
+	/**
+	* Method used to populate PreparedStatement with the variable parms
+	*
+	* @param PreparedStatement - to be filled
+	* @param Variable arguments - a list of Objects to be used on PreparedStatement
+	* @return String - Message of sucessful or failed operation
+	*/
 	public static String populateParms(PreparedStatement pstmt, Object... params) throws SQLException{
 		int index = 1;
 		for (Object obj : params) {
