@@ -14,10 +14,9 @@ import com.mine.olimpiada.bo.CompeticaoBO.Etapas;
 
 /**
  * @author Zinsly, Tatiane
- * @email tzinsly@br.ibm.com
+ * @email tatianezinsly@gmail.com
  */
 
-//Ctrl + J
 public class CompeticaoBOTest {
 
 	@Test

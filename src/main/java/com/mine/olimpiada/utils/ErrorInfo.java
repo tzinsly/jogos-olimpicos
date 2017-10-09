@@ -5,9 +5,13 @@ import org.json.JSONObject;
 
 /**
  * @author Zinsly, Tatiane
- * @email tzinsly@br.ibm.com
+ * @email tatianezinsly@gmail.com
  */
 
+/**
+ * Class representing Error Info Response Record containing a 'message' field and a 'details' field
+ * 
+ */
 public class ErrorInfo {
 	
 	private String message;

@@ -10,17 +10,27 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.mine.olimpiada.controller.DataController;
 import com.mine.olimpiada.dao.CompeticaoDAO;
 
 import groovyjarjarcommonscli.ParseException;
 
 /**
  * @author Zinsly, Tatiane
- * @email tzinsly@br.ibm.com
+ * @email tatianezinsly@gmail.com
+ */
+
+/**
+ * The class CompeticaoBO contains all the attributes and methods related to a competition and its business rules
+ * 
  */
 
 public class CompeticaoBO {
 
+	/**
+	 * The enum type Etapas represent all the possible steps of competition
+	 * 
+	 */
 	public enum Etapas {
 		ELIMINATORIAS,
 		OITAVAS_DE_FINAL,
@@ -38,16 +48,33 @@ public class CompeticaoBO {
 	private String pais2;
 	private Etapas etapa;
 
+	/**
+	* CompeticaoBO constructor. When you are inserting a competition, you do not need to provid an ID, this is a auto-increment
+	* field
+	*
+	*/
 	public CompeticaoBO() {
 		id = 0;
 	}
 
 	private static final String TABLENAME = "competicao";
 
+	/**
+	* Save competition
+	* 
+	* @param data - structure containing all the fields of a CompeticaoBO
+	* @return String - Response related to the success or fail of the operation
+	*/
 	public static String salvar(CompeticaoBO data) {
 		return CompeticaoDAO.salvar(TABLENAME, data);
 	}
 
+	/**
+	* List all the competition, or send the modality to filter the type of competition you want to see
+	* 
+	* @param modalidade - String representing modality or empty
+	* @return String - Response in Json representing competition(s) returned
+	*/
 	public static String listarCompeticao(String modalidade) {
 		ArrayList<CompeticaoBO> listComp = CompeticaoDAO.listar(TABLENAME, modalidade);
 		JSONArray jsonArray = new JSONArray();
@@ -78,15 +105,28 @@ public class CompeticaoBO {
 		return jsonObj.toString();
 	}
 
+	/**
+	* Verify if there are duplicated competition according to the rules established in Controll classes
+	* @see {@code DataController.validarDup}
+	* 
+	* @param data - Structure representing CompeticaoBO
+	* @return boolean - returning if there are duplicated items or not
+	*/
 	public static boolean verificarDup(CompeticaoBO data) {
 		return CompeticaoDAO.verificarDupComp(TABLENAME, data.getModalidade(), data.getLocal(), data.getDataHoraIni(),
 				data.getDataHoraFim());
 	}
-	
+
+	/**
+	* Verify if there are 4 or more competitions in a day in the same local
+	* 
+	* @param data - Structure representing CompeticaoBO
+	* @return int - returning number of lines of competitions for a day in the same local
+	*/
 	public static int verificarQtdComp(CompeticaoBO data) {
 		return CompeticaoDAO.verificarQtdComp(TABLENAME, data.getLocal(), data.getDataHoraIni());
 	}
-	
+
 	public int getId() {
 		return id;
 	}

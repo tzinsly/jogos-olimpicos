@@ -22,24 +22,42 @@ import com.mine.olimpiada.utils.Utils;
 
 /**
  * @author Zinsly, Tatiane
- * @email tzinsly@br.ibm.com
+ * @email tatianezinsly@gmail.com
  */
 
+/**
+ * The class DataController is responsible to communicate between the routes and business object, validating data before
+ * sending to DAO layer
+ * 
+ */
 public class DataController {
 	
 	private static final int LIMIT_COMP = 4;
 
+	/**
+	* Save competition
+	* 
+	* @param data - String to be parsed in a Json structure
+	* @return String - Response related to the success or fail of the operation
+	*/
 	public static String salvarCompeticao(String data) {
 		ErrorInfo errorInfo = new ErrorInfo();
 		CompeticaoBO newCompBO = getRecord(data, errorInfo);
 		
 		if(newCompBO != null && validarCamposObrigatorios(newCompBO, errorInfo) && validarCompeticao(newCompBO, errorInfo)){
-				return CompeticaoBO.salvar(newCompBO);
+			return CompeticaoBO.salvar(newCompBO);
 		} else {
 			return Utils.errorJsonResponse(errorInfo);
 		}
 	}
 	
+	/**
+	* Validate required fields to avoid null, empty or invalid values
+	* 
+	* @param data - CompeticaoBO structure containing data information
+	* @param errorInfo - Structure containing error message and error detailed to be filled in case of unsuccessful results
+	* @return boolean - returning if validation failed or not
+	*/
 	public static boolean validarCamposObrigatorios(CompeticaoBO data, ErrorInfo errorInfo){
 		if(data.getModalidade().equals("null")){
 			errorInfo.setMessage("Campo 'modalidade' não pode ser vazio");
@@ -59,33 +77,27 @@ public class DataController {
 		return true;
 	}
 
+	/**
+	* Validate competition according to business rules
+	* 
+	* @param data - CompeticaoBO structure containing data information
+	* @param errorInfo - Structure containing error message and error detailed to be filled in case of unsuccessful results
+	* @return boolean - returning if validation failed or not
+	*/
 	public static boolean validarCompeticao(CompeticaoBO data, ErrorInfo errorInfo) {
 
-		/*Duas competições não podem ocorrer no mesmo período, no mesmo local, para a
-		mesma modalidade. Ex: Se eu tenho uma partida de futebol que com início às 18:00 e
-		término às 20:00 no Estádio 1, eu não poderia ter outra partida de futebol se iniciando
-		às 19:30 nesse mesmo estádio*/
 		if (!validarDup(data, errorInfo)) {
 			return false;
 		}
 
-		/*
-		● O fluxo de cadastro deve permitir que se forneça o mesmo valor, para os 2 países
-		envolvidos na disputa, apenas se a etapa for Final ou Semifinal. Para as demais etapas,
-		não se deve permitir que se forneça o mesmo valor.*/
 		if (!validarPaises(data, errorInfo)) {
 			return false;
 		}
 
-		/*
-		● A competição deve ter a duração de no mínimo 30 minutos.*/
 		if (!validarDuracao(data, errorInfo)) {
 			return false;
 		}
 
-		/*
-		● Para evitar problemas, a organização das olimpíadas que limitar a no máximo 4
-		competições por dia num mesmo local*/
 		if(!validarQtdCompDia(data, errorInfo)){
 			return false;
 		}
@@ -94,6 +106,13 @@ public class DataController {
 
 	}
 
+	/**
+	* Method used to parser String receiving to a Json Object and then into the CompeticaoBO object 
+	*
+	* @param data - String representing a Json structure
+	* @param errorInfo - Structure containing error message and error detailed to be filled in case of unsuccessful results
+	* @return CompeticaoBO - return a parsed CompeticaoBO object
+	*/
 	public static CompeticaoBO getRecord(String data, ErrorInfo errorInfo) {
 		CompeticaoBO newItemBO = null;
 		try {
@@ -139,7 +158,14 @@ public class DataController {
 		return newItemBO;
 	}
 	
-	//passar para o BO ???
+	/**
+	* Validate if there are duplicated competition:
+	* Two competitions can not occur in the same period of time, local for the same modularity
+	*
+	* @param data - CompeticaoBO structure containing data information
+	* @param errorInfo - Structure containing error message and error detailed to be filled in case of unsuccessful results
+	* @return boolean - returning if validation failed or not
+	*/
 	private static boolean validarDup(CompeticaoBO data, ErrorInfo errorInfo) {
 		if (CompeticaoBO.verificarDup(data)) {
 			errorInfo.setMessage("Competição não inserida");
@@ -150,6 +176,14 @@ public class DataController {
 		}
 	}
 
+	/**
+	* Validate if the countries involved in the game are valid:
+	* The user can provide the same value for 'pais1' and 'pais2' fields only if the step is the 'Final' or 'Semifinal'.
+	*
+	* @param data - CompeticaoBO structure containing data information
+	* @param errorInfo - Structure containing error message and error detailed to be filled in case of unsuccessful results
+	* @return boolean - returning if validation failed or not
+	*/
 	private static boolean validarPaises(CompeticaoBO data, ErrorInfo errorInfo) {
 		if (data.getPais1().toLowerCase().equals(data.getPais2().toLowerCase()) && !data.getEtapa().equals(Etapas.FINAL)
 				&& !data.getEtapa().equals(Etapas.SEMIFINAL)) {
@@ -161,6 +195,14 @@ public class DataController {
 		}
 	}
 
+	/**
+	* Validate the time of the competition:
+	* The competition should last at least 30 minutes
+	*
+	* @param data - CompeticaoBO structure containing data information
+	* @param errorInfo - Structure containing error message and error detailed to be filled in case of unsuccessful results
+	* @return boolean - returning if validation failed or not
+	*/
 	private static boolean validarDuracao(CompeticaoBO data, ErrorInfo errorInfo) {
 		Duration d = Duration.between(data.getDataHoraIni(), data.getDataHoraFim());
 		if (d.getSeconds() < 1800) {
@@ -172,6 +214,14 @@ public class DataController {
 		}
 	}
 	
+	/**
+	* Validate the quantity of competition for a day in the same local:
+	* The maximum number of a competition for a day in the same local is 4
+	*
+	* @param data - CompeticaoBO structure containing data information
+	* @param errorInfo - Structure containing error message and error detailed to be filled in case of unsuccessful results
+	* @return boolean - returning if validation failed or not
+	*/
 	private static boolean validarQtdCompDia(CompeticaoBO data, ErrorInfo errorInfo) {
 		int qtdComp = CompeticaoBO.verificarQtdComp(data);
 		if (qtdComp >= LIMIT_COMP) {
